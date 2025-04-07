@@ -1,0 +1,17 @@
+services:
+  korfbalcal:
+    build: .
+    networks:
+      - proxy
+    expose:
+      - 80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vitalweb.rule=Host(`korfbalcal.vitalnet.cc`)"
+      - "traefik.http.routers.vitalweb.entrypoints=websecure"
+      - "traefik.http.routers.vitalweb.tls=true"
+      - "traefik.http.routers.vitalweb.tls.certresolver=myresolver"
+
+networks:
+  proxy:
+    external: true
