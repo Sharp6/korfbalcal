@@ -8,4 +8,5 @@ RUN npm run build
 
 FROM nginx:latest
 COPY --from=build /usr/local/app/dist/korfbalcal /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
