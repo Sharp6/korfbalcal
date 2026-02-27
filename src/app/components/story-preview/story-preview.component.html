@@ -1,0 +1,27 @@
+<div class="story-preview">
+  <div class="story-canvas">
+    <ng-container *ngIf="groups.length; else emptyState">
+      <div class="story-day" *ngFor="let group of groups">
+        <div class="story-header">
+          <div class="story-day-name">{{ group.date | date:'EEEE' }}</div>
+          <div class="story-date">{{ group.date | date:'d MMMM y' }}</div>
+        </div>
+
+        <div class="story-list">
+          <div class="story-row" *ngFor="let game of group.games">
+            <div class="story-time">{{ game.start | date:'HH:mm' }}</div>
+            <div class="story-match">{{ game.title }}</div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #emptyState>
+      <div class="story-empty">
+        <div class="story-day-name">Geen wedstrijden</div>
+        <div class="story-date">Pas je filters aan</div>
+      </div>
+    </ng-template>
+  </div>
+  <div class="story-meta">Export preview (1080x1920)</div>
+</div>

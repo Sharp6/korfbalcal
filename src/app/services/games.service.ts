@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable, shareReplay } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, map, Observable, shareReplay, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,15 +8,25 @@ import { map, Observable, shareReplay } from 'rxjs';
 export class GamesService {
 
   teams = ['VOORW A', 'VOORW B', 'U11', 'U13', 'U15', 'U17', 'U19'];
+  defaultStartDate = new Date();
+  defaultEndDate = new Date(new Date().getFullYear(), 11, 31, 23, 59);
 
   private apiUrl = '/api/ajax/calendar/events';
+  private dateRange$ = new BehaviorSubject<{ start: Date; end: Date }>({
+    start: this.defaultStartDate,
+    end: this.defaultEndDate
+  });
 
   constructor(private http: HttpClient) { }
 
-  private _events$: Observable<any> = this.fetchEvents()
-    .pipe(
-      shareReplay(1)
-    );
+  private _events$: Observable<any> = this.dateRange$.pipe(
+    distinctUntilChanged((prev, next) =>
+      prev.start.getTime() === next.start.getTime() &&
+      prev.end.getTime() === next.end.getTime()
+    ),
+    switchMap(range => this.fetchEvents(range.start, range.end)),
+    shareReplay(1)
+  );
 
   games$:Observable<any[]> = this._events$.pipe(
     map(events => {
@@ -41,18 +51,31 @@ export class GamesService {
     })
   )
 
-  fetchEvents(): Observable<any> {
+  setDateRange(start: Date, end: Date) {
+    this.dateRange$.next({ start, end });
+  }
+
+  private formatDateTime(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  }
+
+  fetchEvents(start: Date, end: Date): Observable<any> {
     const headers = new HttpHeaders({
       'accept': '*/*',
       'accept-language': 'nl-NL,nl;q=0.9,en-US;q=0.8,en;q=0.7',
       'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
-      'sec-ch-ua-mobile': '?0',
-      'sec-ch-ua-platform': '"macOS"',
-      'sec-fetch-dest': 'empty',
-      'sec-fetch-mode': 'cors',
-      'sec-fetch-site': 'cross-site',
-      'Referer': 'https://www.voorwaartskkc.be/',
+      //'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
+      //'sec-ch-ua-mobile': '?0',
+      //'sec-ch-ua-platform': '"macOS"',
+      //'sec-fetch-dest': 'empty',
+      //'sec-fetch-mode': 'cors',
+      //'sec-fetch-site': 'cross-site',
+      //'Referer': 'https://www.voorwaartskkc.be/',
       'Referrer-Policy': 'strict-origin-when-cross-origin'
     });
 
@@ -61,12 +84,10 @@ export class GamesService {
       view: 'website',
       'widget-settings-id': '40233',
       'filter-search': '',
-      'fc-start': '2026-02-27 11:49',
-      'fc-end': '2026-12-31 23:59'
+      'fc-start': this.formatDateTime(start),
+      'fc-end': this.formatDateTime(end)
     }).toString();
 
     return this.http.post(this.apiUrl, body, { headers });
   }
 }
-
-

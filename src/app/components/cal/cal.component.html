@@ -1,4 +1,5 @@
-<div>
+<div class="cal-layout">
+    <div class="cal-controls">
     <mat-form-field>
         <mat-label>Teams</mat-label>
         <mat-select [formControl]="selectedTeams" multiple>
@@ -12,11 +13,31 @@
         </mat-select>
     </mat-form-field>
 
+    <mat-form-field>
+        <mat-label>Datum bereik</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate [formControl]="startDate" placeholder="Startdatum">
+            <input matEndDate [formControl]="endDate" placeholder="Einddatum">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+
+    <div class="date-quick-actions">
+        <button mat-stroked-button type="button" (click)="setNextDaysRange(7)">Volgende 7 dagen</button>
+        <button mat-stroked-button type="button" (click)="setNextDaysRange(30)">Volgende 30 dagen</button>
+        <button mat-stroked-button type="button" (click)="setNextDaysRange(60)">Volgende 60 dagen</button>
+        <button mat-stroked-button type="button" (click)="setNextDaysRange(90)">Volgende 90 dagen</button>
+    </div>
+
 
     <mat-checkbox [formControl]="onlyHomeGames">Thuiswedstrijden</mat-checkbox>
 
 
-    <div *ngIf="filteredGames$ | async as games">
+    </div>
+
+    <div *ngIf="filteredGames$ | async as games" class="cal-content">
+        <div class="cal-table">
         <table mat-table [dataSource]="games" class="mat-elevation-z8">
 
             <ng-container matColumnDef="title">
@@ -49,6 +70,14 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
+        </div>
+
+        <ng-container *ngIf="storyGroups$ | async as storyGroups; else emptyGroups">
+            <app-story-preview [groups]="storyGroups" />
+        </ng-container>
+        <ng-template #emptyGroups>
+            <app-story-preview [groups]="[]" />
+        </ng-template>
     </div>
 
 </div>

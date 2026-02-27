@@ -1,4 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap');
+
+:root {
+  --club-green: #2bbf78;
+  --club-green-dark: #168754;
+  --club-black: #0b0b0b;
+  --club-white: #ffffff;
+  --club-gray: #e6e9e6;
+  --club-border: #c9d5ce;
+  --font-display: 'Oswald', 'Arial Narrow', sans-serif;
+  --font-body: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+}
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--club-black);
+  background: var(--club-white);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: 0.5px;
+}

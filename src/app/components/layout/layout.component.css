@@ -10,8 +10,13 @@
 
 .app-header h1 {
   margin: 0;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--club-green);
+  border-bottom: 3px solid var(--club-green);
+  display: inline-block;
+  padding-bottom: 4px;
 }
 
 .app-main {
