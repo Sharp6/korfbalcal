@@ -1,8 +1,14 @@
-<div class="story-preview">
+<div class="story-preview" [class.fill-pills]="fillPills" [class.has-bg]="backgroundUrl">
   <div class="story-canvas">
     <div class="story-bg" [ngStyle]="backgroundStyle"></div>
     <div class="story-overlay" [ngStyle]="overlayStyle"></div>
     <div class="story-content">
+    <div class="story-logo-row" [ngClass]="'logo-' + logoPosition" *ngIf="showLogo || title" [ngStyle]="logoStyle">
+      <ng-container *ngIf="showLogo && logoUrl">
+        <img [src]="logoUrl" alt="Club logo">
+      </ng-container>
+      <div class="story-title" *ngIf="title">{{ title }}</div>
+    </div>
     <ng-container *ngIf="groups.length; else emptyState">
       <div class="story-day" *ngFor="let group of groups">
         <div class="story-header">

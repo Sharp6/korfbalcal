@@ -21,6 +21,13 @@ export interface StoryDayGroup {
 export class StoryPreviewComponent {
   @Input({ required: true }) groups: StoryDayGroup[] = [];
   @Input() backgroundUrl: string | null = null;
+  @Input() fillPills = false;
+  @Input() showLogo = false;
+  @Input() logoUrl: string | null = null;
+  @Input() logoMarginTop = 0;
+  @Input() logoMarginBottom = 0;
+  @Input() title = '';
+  @Input() logoPosition: 'left' | 'center' | 'right' = 'center';
   @Input() backgroundSettings = {
     zoom: 110,
     positionX: 50,
@@ -48,6 +55,13 @@ export class StoryPreviewComponent {
   get overlayStyle() {
     return {
       opacity: `${this.backgroundSettings.overlay / 100}`
+    };
+  }
+
+  get logoStyle() {
+    return {
+      marginTop: `${this.logoMarginTop}px`,
+      marginBottom: `${this.logoMarginBottom}px`
     };
   }
 }

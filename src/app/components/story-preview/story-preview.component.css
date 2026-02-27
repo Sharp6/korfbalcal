@@ -6,7 +6,7 @@
 
 .story-canvas {
   width: 360px;
-  aspect-ratio: 9 / 16;
+  /* aspect-ratio: 9 / 16; */
   border: 2px solid var(--club-green);
   border-radius: 16px;
   padding: 24px;
@@ -44,6 +44,45 @@
   gap: 24px;
 }
 
+.story-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.story-logo-row.logo-left {
+  justify-content: flex-start;
+}
+
+.story-logo-row.logo-center {
+  justify-content: center;
+}
+
+.story-logo-row.logo-right {
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+
+.story-logo-row img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}
+
+.story-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--club-black);
+}
+
+.story-logo {
+  margin-top: -20px; /* or 0 */
+  margin-bottom: -20px; /* or 0 */
+}
+
 .story-day {
   display: flex;
   flex-direction: column;
@@ -55,6 +94,13 @@
   flex-direction: row;
   gap: 12px;
   align-items: flex-end;
+}
+
+.has-bg .story-header {
+  background: var(--club-white);
+  padding: 6px 12px;
+  border-radius: 999px;
+  align-self: flex-start;
 }
 
 .story-day-name {
@@ -103,6 +149,16 @@
   padding: 8px 12px;
   font-weight: 600;
   line-height: 1.2;
+}
+
+.fill-pills .story-time {
+  background: var(--club-green);
+  color: var(--club-white);
+}
+
+.fill-pills .story-match {
+  background: var(--club-border);
+  color: var(--club-black);
 }
 
 .story-empty {

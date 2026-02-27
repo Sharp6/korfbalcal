@@ -73,10 +73,18 @@
         </div>
 
         <div class="story-panel">
-            <ng-container *ngIf="storyGroups$ | async as storyGroups; else emptyGroups">
-                <app-story-preview
-                    [groups]="storyGroups"
+            <div class="story-panel-preview">
+                <ng-container *ngIf="storyGroups$ | async as storyGroups; else emptyGroups">
+                    <app-story-preview
+                        [groups]="storyGroups"
                     [backgroundUrl]="backgroundEnabled ? backgroundUrl : null"
+                    [fillPills]="fillPills"
+                    [showLogo]="showLogo"
+                    [logoUrl]="logoUrl"
+                    [logoMarginTop]="logoMarginTop"
+                    [logoMarginBottom]="logoMarginBottom"
+                    [title]="titleText"
+                    [logoPosition]="logoPosition"
                     [backgroundSettings]="backgroundSettings"
                 />
             </ng-container>
@@ -84,9 +92,17 @@
                 <app-story-preview
                     [groups]="[]"
                     [backgroundUrl]="backgroundEnabled ? backgroundUrl : null"
+                    [fillPills]="fillPills"
+                    [showLogo]="showLogo"
+                    [logoUrl]="logoUrl"
+                    [logoMarginTop]="logoMarginTop"
+                    [logoMarginBottom]="logoMarginBottom"
+                    [title]="titleText"
+                    [logoPosition]="logoPosition"
                     [backgroundSettings]="backgroundSettings"
                 />
             </ng-template>
+            </div>
 
             <div class="story-controls">
                 <label class="story-control">
@@ -97,6 +113,39 @@
                     <span>Achtergrond aan</span>
                     <input type="checkbox" [checked]="backgroundEnabled"
                            (change)="backgroundEnabled = $any($event.target).checked">
+                </label>
+                <label class="story-control story-toggle">
+                    <span>Pills vullen</span>
+                    <input type="checkbox" [checked]="fillPills"
+                           (change)="fillPills = $any($event.target).checked">
+                </label>
+                <label class="story-control story-toggle">
+                    <span>Logo tonen</span>
+                    <input type="checkbox" [checked]="showLogo"
+                           (change)="showLogo = $any($event.target).checked">
+                </label>
+                <label class="story-control">
+                    <span>Titel</span>
+                    <input type="text" [value]="titleText"
+                           (input)="titleText = $any($event.target).value">
+                </label>
+                <label class="story-control">
+                    <span>Logo positie</span>
+                    <select [value]="logoPosition" (change)="logoPosition = $any($event.target).value">
+                        <option value="left">Links</option>
+                        <option value="center">Midden</option>
+                        <option value="right">Rechts</option>
+                    </select>
+                </label>
+                <label class="story-control">
+                    <span>Logo marge boven</span>
+                    <input type="range" min="-24" max="48" [value]="logoMarginTop"
+                           (input)="logoMarginTop = $any($event.target).valueAsNumber">
+                </label>
+                <label class="story-control">
+                    <span>Logo marge onder</span>
+                    <input type="range" min="-24" max="48" [value]="logoMarginBottom"
+                           (input)="logoMarginBottom = $any($event.target).valueAsNumber">
                 </label>
                 <div class="story-presets">
                     <span>Presets</span>

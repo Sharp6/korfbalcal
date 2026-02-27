@@ -95,6 +95,13 @@ export class CalComponent implements OnInit {
     overlay: 35
   };
   backgroundEnabled = true;
+  fillPills = false;
+  showLogo = true;
+  logoUrl = '/voorwaarts.png';
+  logoMarginTop = 0;
+  logoMarginBottom = 0;
+  titleText = '';
+  logoPosition: 'left' | 'center' | 'right' = 'center';
 
   presets: { label: string; values: BackgroundSettings }[] = [
     {

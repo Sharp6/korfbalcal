@@ -19,10 +19,10 @@
 }
 
 .cal-content {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  display: flex;
+  flex-direction: column;
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .cal-table {
@@ -30,9 +30,15 @@
 }
 
 .story-panel {
+  display: grid;
+  grid-template-columns: minmax(280px, 420px) minmax(320px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.story-panel-preview {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  justify-content: center;
 }
 
 .story-controls {
@@ -61,6 +67,15 @@
   width: 100%;
 }
 
+.story-control input[type="text"],
+.story-control select {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--club-border);
+  font-family: var(--font-body);
+}
+
 .story-toggle {
   grid-template-columns: 1fr auto;
   align-items: center;
@@ -86,11 +101,11 @@
 }
 
 @media (max-width: 960px) {
-  .cal-content {
+  .story-panel {
     grid-template-columns: 1fr;
   }
 
-  app-story-preview {
-    width: 100%;
+  .story-panel-preview {
+    justify-content: flex-start;
   }
 }
