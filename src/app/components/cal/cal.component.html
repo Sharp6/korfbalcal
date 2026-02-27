@@ -2,6 +2,9 @@
     <mat-form-field>
         <mat-label>Teams</mat-label>
         <mat-select [formControl]="selectedTeams" multiple>
+            <mat-option (click)="selectAllTeams()">Select all</mat-option>
+            <mat-option (click)="deselectAllTeams()">Deselect all</mat-option>
+            <mat-divider></mat-divider>
 
             @for (team of teams; track team) {
             <mat-option [value]="team">{{team}}</mat-option>

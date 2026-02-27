@@ -1,0 +1,20 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  padding: 16px 24px 8px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.app-main {
+  flex: 1;
+  padding: 0 24px 24px;
+}

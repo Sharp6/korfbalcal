@@ -8,11 +8,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
 
 
 @Component({
   selector: 'app-cal',
-  imports: [CommonModule, MatCheckboxModule, MatTableModule, MatFormFieldModule, MatSelectModule, FormsModule, ReactiveFormsModule, MatIconModule],
+  imports: [CommonModule, MatCheckboxModule, MatTableModule, MatFormFieldModule, MatSelectModule, FormsModule, ReactiveFormsModule, MatIconModule, MatDividerModule],
   templateUrl: './cal.component.html',
   styleUrl: './cal.component.css'
 })
@@ -50,5 +51,12 @@ export class CalComponent implements OnInit {
   games$: Observable<any[]> = this.gamesService.games$;
   filteredGames$ = this.games$;
 
+  selectAllTeams() {
+    this.selectedTeams.setValue(this.teams.slice());
+  }
+
+  deselectAllTeams() {
+    this.selectedTeams.setValue([]);
+  }
 
 }

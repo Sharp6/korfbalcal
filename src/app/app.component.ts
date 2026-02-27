@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { CalComponent } from './components/cal/cal.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [ CalComponent],
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
