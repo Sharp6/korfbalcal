@@ -7,7 +7,7 @@ import { map, Observable, shareReplay } from 'rxjs';
 })
 export class GamesService {
 
-  teams = ['VW A', 'VW B', 'U11', 'U13', 'U15', 'U17', 'U19'];
+  teams = ['VOORW A', 'VOORW B', 'U11', 'U13', 'U15', 'U17', 'U19'];
 
   private apiUrl = '/api/ajax/calendar/events';
 
@@ -31,7 +31,7 @@ export class GamesService {
           return game;
         })
         .map((game: { title: string; isHomeGame: boolean; }) => {
-          if (game.title.startsWith("VW")) {
+          if (game.title.startsWith("VW") || game.title.startsWith("VOORW")) {
             game.isHomeGame = true;
           } else {
             game.isHomeGame = false;
@@ -61,14 +61,11 @@ export class GamesService {
       view: 'website',
       'widget-settings-id': '40233',
       'filter-search': '',
-      'fc-start': '2025-03-23 11:49',
-      'fc-end': '2025-12-31 23:59'
+      'fc-start': '2026-02-27 11:49',
+      'fc-end': '2026-12-31 23:59'
     }).toString();
 
     return this.http.post(this.apiUrl, body, { headers });
-
-    
-  
   }
 }
 
