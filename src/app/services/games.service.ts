@@ -45,7 +45,8 @@ export class GamesService {
             game.isHomeGame = true;
           } else {
             game.isHomeGame = false;
-          } 
+          }
+          game.title = game.title.replace('VOORW', 'VW');
           return game;
         });
     })
