@@ -16,6 +16,32 @@
   gap: 24px;
   background: var(--club-white);
   overflow: hidden;
+  position: relative;
+}
+
+.story-bg {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size: cover;
+  z-index: 0;
+}
+
+.story-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--club-white);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.story-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .story-day {
@@ -26,8 +52,9 @@
 
 .story-header {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-end;
 }
 
 .story-day-name {
@@ -41,7 +68,7 @@
 
 .story-date {
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 28px;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--club-black);

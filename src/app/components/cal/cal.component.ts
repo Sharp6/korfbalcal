@@ -83,6 +83,33 @@ export class CalComponent implements OnInit {
   storyGroups$ = this.filteredGames$.pipe(
     map(games => this.groupGamesByDate(games))
   );
+  backgroundUrl: string | null = null;
+  backgroundSettings: BackgroundSettings = {
+    zoom: 110,
+    positionX: 50,
+    positionY: 50,
+    blur: 0,
+    brightness: 90,
+    contrast: 90,
+    saturate: 80,
+    overlay: 35
+  };
+  backgroundEnabled = true;
+
+  presets: { label: string; values: BackgroundSettings }[] = [
+    {
+      label: 'Subtle',
+      values: { zoom: 110, positionX: 50, positionY: 50, blur: 2, brightness: 95, contrast: 90, saturate: 75, overlay: 45 }
+    },
+    {
+      label: 'Muted',
+      values: { zoom: 115, positionX: 50, positionY: 50, blur: 4, brightness: 92, contrast: 85, saturate: 60, overlay: 55 }
+    },
+    {
+      label: 'Punchy',
+      values: { zoom: 110, positionX: 50, positionY: 50, blur: 1, brightness: 100, contrast: 105, saturate: 110, overlay: 30 }
+    }
+  ];
 
   selectAllTeams() {
     this.selectedTeams.setValue(this.teams.slice());
@@ -98,6 +125,30 @@ export class CalComponent implements OnInit {
     end.setDate(end.getDate() + days);
     this.startDate.setValue(start);
     this.endDate.setValue(end);
+  }
+
+  onBackgroundSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.backgroundUrl = typeof reader.result === 'string' ? reader.result : null;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  applyPreset(preset: { values: BackgroundSettings }) {
+    const current = this.backgroundSettings;
+    this.backgroundSettings = {
+      ...preset.values,
+      zoom: current.zoom,
+      positionX: current.positionX,
+      positionY: current.positionY
+    };
   }
 
   private groupGamesByDate(games: StoryGame[]): StoryDayGroup[] {
@@ -120,3 +171,14 @@ export class CalComponent implements OnInit {
   }
 
 }
+
+type BackgroundSettings = {
+  zoom: number;
+  positionX: number;
+  positionY: number;
+  blur: number;
+  brightness: number;
+  contrast: number;
+  saturate: number;
+  overlay: number;
+};

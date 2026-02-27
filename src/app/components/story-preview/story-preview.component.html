@@ -1,10 +1,13 @@
 <div class="story-preview">
   <div class="story-canvas">
+    <div class="story-bg" [ngStyle]="backgroundStyle"></div>
+    <div class="story-overlay" [ngStyle]="overlayStyle"></div>
+    <div class="story-content">
     <ng-container *ngIf="groups.length; else emptyState">
       <div class="story-day" *ngFor="let group of groups">
         <div class="story-header">
           <div class="story-day-name">{{ group.date | date:'EEEE' }}</div>
-          <div class="story-date">{{ group.date | date:'d MMMM y' }}</div>
+          <div class="story-date">{{ group.date | date:'d/M' }}</div>
         </div>
 
         <div class="story-list">
@@ -22,6 +25,7 @@
         <div class="story-date">Pas je filters aan</div>
       </div>
     </ng-template>
+    </div>
   </div>
   <div class="story-meta">Export preview (1080x1920)</div>
 </div>

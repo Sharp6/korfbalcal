@@ -72,12 +72,81 @@
         </table>
         </div>
 
-        <ng-container *ngIf="storyGroups$ | async as storyGroups; else emptyGroups">
-            <app-story-preview [groups]="storyGroups" />
-        </ng-container>
-        <ng-template #emptyGroups>
-            <app-story-preview [groups]="[]" />
-        </ng-template>
+        <div class="story-panel">
+            <ng-container *ngIf="storyGroups$ | async as storyGroups; else emptyGroups">
+                <app-story-preview
+                    [groups]="storyGroups"
+                    [backgroundUrl]="backgroundEnabled ? backgroundUrl : null"
+                    [backgroundSettings]="backgroundSettings"
+                />
+            </ng-container>
+            <ng-template #emptyGroups>
+                <app-story-preview
+                    [groups]="[]"
+                    [backgroundUrl]="backgroundEnabled ? backgroundUrl : null"
+                    [backgroundSettings]="backgroundSettings"
+                />
+            </ng-template>
+
+            <div class="story-controls">
+                <label class="story-control">
+                    <span>Achtergrondfoto</span>
+                    <input type="file" accept="image/*" (change)="onBackgroundSelected($event)">
+                </label>
+                <label class="story-control story-toggle">
+                    <span>Achtergrond aan</span>
+                    <input type="checkbox" [checked]="backgroundEnabled"
+                           (change)="backgroundEnabled = $any($event.target).checked">
+                </label>
+                <div class="story-presets">
+                    <span>Presets</span>
+                    <div class="story-preset-buttons">
+                        <button mat-stroked-button type="button" *ngFor="let preset of presets"
+                                (click)="applyPreset(preset)">{{ preset.label }}</button>
+                    </div>
+                </div>
+                <label class="story-control">
+                    <span>Zoom</span>
+                    <input type="range" min="90" max="300" [value]="backgroundSettings.zoom"
+                           (input)="backgroundSettings.zoom = $any($event.target).valueAsNumber">
+                </label>
+                <label class="story-control">
+                    <span>Positie X</span>
+                    <input type="range" min="0" max="100" [value]="backgroundSettings.positionX"
+                           (input)="backgroundSettings.positionX = $any($event.target).valueAsNumber">
+                </label>
+                <label class="story-control">
+                    <span>Positie Y</span>
+                    <input type="range" min="0" max="100" [value]="backgroundSettings.positionY"
+                           (input)="backgroundSettings.positionY = $any($event.target).valueAsNumber">
+                </label>
+                <label class="story-control">
+                    <span>Blur</span>
+                    <input type="range" min="0" max="12" [value]="backgroundSettings.blur"
+                           (input)="backgroundSettings.blur = $any($event.target).valueAsNumber">
+                </label>
+                <label class="story-control">
+                    <span>Brightness</span>
+                    <input type="range" min="70" max="120" [value]="backgroundSettings.brightness"
+                           (input)="backgroundSettings.brightness = $any($event.target).valueAsNumber">
+                </label>
+                <label class="story-control">
+                    <span>Contrast</span>
+                    <input type="range" min="70" max="120" [value]="backgroundSettings.contrast"
+                           (input)="backgroundSettings.contrast = $any($event.target).valueAsNumber">
+                </label>
+                <label class="story-control">
+                    <span>Saturation</span>
+                    <input type="range" min="50" max="140" [value]="backgroundSettings.saturate"
+                           (input)="backgroundSettings.saturate = $any($event.target).valueAsNumber">
+                </label>
+                <label class="story-control">
+                    <span>Overlay</span>
+                    <input type="range" min="0" max="70" [value]="backgroundSettings.overlay"
+                           (input)="backgroundSettings.overlay = $any($event.target).valueAsNumber">
+                </label>
+            </div>
+        </div>
     </div>
 
 </div>
