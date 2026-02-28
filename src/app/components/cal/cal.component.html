@@ -73,7 +73,7 @@
         </div>
 
         <div class="story-panel">
-            <div class="story-panel-preview">
+            <div class="story-panel-preview" #storyCapture>
                 <ng-container *ngIf="storyGroups$ | async as storyGroups; else emptyGroups">
                     <app-story-preview
                         [groups]="storyGroups"
@@ -194,6 +194,9 @@
                     <input type="range" min="0" max="70" [value]="backgroundSettings.overlay"
                            (input)="backgroundSettings.overlay = $any($event.target).valueAsNumber">
                 </label>
+                <button mat-stroked-button type="button" (click)="downloadStoryImage()" [disabled]="exporting">
+                    {{ exporting ? 'Bezig met exporteren...' : 'Download afbeelding' }}
+                </button>
             </div>
         </div>
     </div>

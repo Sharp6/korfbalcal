@@ -1,4 +1,5 @@
-import { Component, EventEmitter, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, ViewChild } from '@angular/core';
+import { toPng } from 'html-to-image';
 import { GamesService } from '../../services/games.service';
 import { map, Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -102,6 +103,9 @@ export class CalComponent implements OnInit {
   logoMarginBottom = 0;
   titleText = '';
   logoPosition: 'left' | 'center' | 'right' = 'center';
+  exporting = false;
+
+  @ViewChild('storyCapture') storyCapture?: ElementRef<HTMLDivElement>;
 
   presets: { label: string; values: BackgroundSettings }[] = [
     {
@@ -156,6 +160,91 @@ export class CalComponent implements OnInit {
       positionX: current.positionX,
       positionY: current.positionY
     };
+  }
+
+  async downloadStoryImage() {
+    if (this.exporting || !this.storyCapture?.nativeElement) {
+      return;
+    }
+
+    this.exporting = true;
+    try {
+      const source = this.storyCapture.nativeElement.querySelector('.story-canvas') as HTMLElement | null;
+      if (!source) {
+        return;
+      }
+
+      await document.fonts.ready;
+      await this.waitForBackgroundStyle(source);
+      await this.waitForImages(source);
+      const width = source.offsetWidth || 360;
+      const scale = 1080 / width;
+      const dataUrl = await toPng(source, {
+        cacheBust: true,
+        pixelRatio: scale
+      });
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = 'story-export.png';
+      link.click();
+    } finally {
+      this.exporting = false;
+    }
+  }
+
+  private async waitForImages(root: HTMLElement) {
+    const imgElements = Array.from(root.querySelectorAll('img')) as HTMLImageElement[];
+    const imgPromises = imgElements.map(img => {
+      if (img.complete && img.naturalWidth > 0) {
+        return Promise.resolve();
+      }
+      return new Promise<void>((resolve) => {
+        const onDone = () => {
+          img.removeEventListener('load', onDone);
+          img.removeEventListener('error', onDone);
+          resolve();
+        };
+        img.addEventListener('load', onDone, { once: true });
+        img.addEventListener('error', onDone, { once: true });
+      });
+    });
+
+    const bgElements = [root, ...Array.from(root.querySelectorAll<HTMLElement>('.story-bg'))];
+    const bgPromises = bgElements.map(el => this.preloadBackgroundImage(el));
+
+    await Promise.all([...imgPromises, ...bgPromises]);
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+  }
+
+  private async waitForBackgroundStyle(root: HTMLElement) {
+    const bgEl = root.querySelector<HTMLElement>('.story-bg');
+    if (!bgEl) {
+      return;
+    }
+
+    const start = Date.now();
+    while (Date.now() - start < 500) {
+      const bg = getComputedStyle(bgEl).backgroundImage;
+      if (bg && bg !== 'none') {
+        return;
+      }
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    }
+  }
+
+  private async preloadBackgroundImage(el: HTMLElement) {
+    const bg = getComputedStyle(el).backgroundImage;
+    const match = /url\\([\"']?(.*?)[\"']?\\)/.exec(bg);
+    if (!match || !match[1] || match[1] === 'none') {
+      return;
+    }
+
+    await new Promise<void>((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = match[1];
+    });
   }
 
   private groupGamesByDate(games: StoryGame[]): StoryDayGroup[] {
