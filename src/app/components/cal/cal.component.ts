@@ -1,39 +1,23 @@
-import { Component, ElementRef, EventEmitter, OnInit, ViewChild } from '@angular/core';
-import { toPng } from 'html-to-image';
+import { Component, EventEmitter, OnInit } from '@angular/core';
 import { GamesService } from '../../services/games.service';
 import { map, Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
-import {MatSelectModule} from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
 import { StoryPreviewComponent, StoryDayGroup, StoryGame } from '../story-preview/story-preview.component';
+import { CalFiltersComponent } from '../cal-filters/cal-filters.component';
+import { CalTableComponent } from '../cal-table/cal-table.component';
+import { StoryControlsComponent } from '../story-controls/story-controls.component';
+import { CalFilters } from '../../models/cal-filters.model';
+import { BackgroundSettings, StorySettings } from '../../models/story-settings.model';
 
 
 @Component({
   selector: 'app-cal',
   imports: [
     CommonModule,
-    MatCheckboxModule,
-    MatTableModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatDividerModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatInputModule,
-    MatButtonModule,
-    StoryPreviewComponent
+    CalFiltersComponent,
+    CalTableComponent,
+    StoryPreviewComponent,
+    StoryControlsComponent
   ],
   templateUrl: './cal.component.html',
   styleUrl: './cal.component.css'
@@ -42,41 +26,19 @@ export class CalComponent implements OnInit {
   displayedColumns: string[] = ['title', 'team', 'isHomeGame', 'date', 'time'];
 
   teams: string[] = this.gamesService.teams;
-  selectedTeams = new FormControl(this.gamesService.teams.slice());
-  onlyHomeGames = new FormControl(false);
-  startDate = new FormControl(this.gamesService.defaultStartDate);
-  endDate = new FormControl(this.gamesService.defaultEndDate);
-
-  filterForm = new FormGroup({
-    selectedTeams: this.selectedTeams,
-    onlyHomeGames: this.onlyHomeGames,
-    startDate: this.startDate,
-    endDate: this.endDate
-  });
-  filterChange: EventEmitter<any> = new EventEmitter();
+  filters: CalFilters = {
+    selectedTeams: this.gamesService.teams.slice(),
+    onlyHomeGames: false,
+    startDate: this.gamesService.defaultStartDate,
+    endDate: this.gamesService.defaultEndDate
+  };
+  filterChange: EventEmitter<CalFilters> = new EventEmitter();
 
   constructor(private gamesService: GamesService) {
   }
 
   ngOnInit() {
-    this.filterForm.valueChanges.subscribe(filters => {
-      const start = filters.startDate ?? this.gamesService.defaultStartDate;
-      const end = filters.endDate ?? this.gamesService.defaultEndDate;
-      this.gamesService.setDateRange(start, end);
-      //this.filterChange.emit(filters);
-      this.filteredGames$ = this.games$.pipe(
-        map(games => {
-          console.log(filters);
-          let filteredGames = games;
-          filteredGames = filteredGames.filter(game => filters.selectedTeams?.includes(game.team));
-          filteredGames = filteredGames.filter(game => filters.onlyHomeGames ? game.isHomeGame : true);
-          return filteredGames;
-        })
-      );
-      this.storyGroups$ = this.filteredGames$.pipe(
-        map(games => this.groupGamesByDate(games))
-      );
-    });
+    this.applyFilters(this.filters);
   }
 
   games$: Observable<any[]> = this.gamesService.games$;
@@ -84,28 +46,27 @@ export class CalComponent implements OnInit {
   storyGroups$ = this.filteredGames$.pipe(
     map(games => this.groupGamesByDate(games))
   );
-  backgroundUrl: string | null = null;
-  backgroundSettings: BackgroundSettings = {
-    zoom: 110,
-    positionX: 50,
-    positionY: 50,
-    blur: 0,
-    brightness: 90,
-    contrast: 90,
-    saturate: 80,
-    overlay: 35
+  storySettings: StorySettings = {
+    backgroundUrl: null,
+    backgroundEnabled: true,
+    backgroundSettings: {
+      zoom: 110,
+      positionX: 50,
+      positionY: 50,
+      blur: 0,
+      brightness: 90,
+      contrast: 90,
+      saturate: 80,
+      overlay: 35
+    },
+    fillPills: false,
+    showLogo: true,
+    logoUrl: '/voorwaarts.png',
+    logoMarginTop: 0,
+    logoMarginBottom: 0,
+    titleText: '',
+    logoPosition: 'center'
   };
-  backgroundEnabled = true;
-  fillPills = false;
-  showLogo = true;
-  logoUrl = '/voorwaarts.png';
-  logoMarginTop = 0;
-  logoMarginBottom = 0;
-  titleText = '';
-  logoPosition: 'left' | 'center' | 'right' = 'center';
-  exporting = false;
-
-  @ViewChild('storyCapture') storyCapture?: ElementRef<HTMLDivElement>;
 
   presets: { label: string; values: BackgroundSettings }[] = [
     {
@@ -122,129 +83,28 @@ export class CalComponent implements OnInit {
     }
   ];
 
-  selectAllTeams() {
-    this.selectedTeams.setValue(this.teams.slice());
+  onFiltersChange(filters: CalFilters) {
+    this.filters = filters;
+    this.applyFilters(filters);
   }
 
-  deselectAllTeams() {
-    this.selectedTeams.setValue([]);
+  onStorySettingsChange(settings: StorySettings) {
+    this.storySettings = settings;
   }
 
-  setNextDaysRange(days: number) {
-    const start = new Date();
-    const end = new Date(start);
-    end.setDate(end.getDate() + days);
-    this.startDate.setValue(start);
-    this.endDate.setValue(end);
-  }
-
-  onBackgroundSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) {
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.backgroundUrl = typeof reader.result === 'string' ? reader.result : null;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  applyPreset(preset: { values: BackgroundSettings }) {
-    const current = this.backgroundSettings;
-    this.backgroundSettings = {
-      ...preset.values,
-      zoom: current.zoom,
-      positionX: current.positionX,
-      positionY: current.positionY
-    };
-  }
-
-  async downloadStoryImage() {
-    if (this.exporting || !this.storyCapture?.nativeElement) {
-      return;
-    }
-
-    this.exporting = true;
-    try {
-      const source = this.storyCapture.nativeElement.querySelector('.story-canvas') as HTMLElement | null;
-      if (!source) {
-        return;
-      }
-
-      await document.fonts.ready;
-      await this.waitForBackgroundStyle(source);
-      await this.waitForImages(source);
-      const width = source.offsetWidth || 360;
-      const scale = 1080 / width;
-      const dataUrl = await toPng(source, {
-        cacheBust: true,
-        pixelRatio: scale
-      });
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = 'story-export.png';
-      link.click();
-    } finally {
-      this.exporting = false;
-    }
-  }
-
-  private async waitForImages(root: HTMLElement) {
-    const imgElements = Array.from(root.querySelectorAll('img')) as HTMLImageElement[];
-    const imgPromises = imgElements.map(img => {
-      if (img.complete && img.naturalWidth > 0) {
-        return Promise.resolve();
-      }
-      return new Promise<void>((resolve) => {
-        const onDone = () => {
-          img.removeEventListener('load', onDone);
-          img.removeEventListener('error', onDone);
-          resolve();
-        };
-        img.addEventListener('load', onDone, { once: true });
-        img.addEventListener('error', onDone, { once: true });
-      });
-    });
-
-    const bgElements = [root, ...Array.from(root.querySelectorAll<HTMLElement>('.story-bg'))];
-    const bgPromises = bgElements.map(el => this.preloadBackgroundImage(el));
-
-    await Promise.all([...imgPromises, ...bgPromises]);
-    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
-  }
-
-  private async waitForBackgroundStyle(root: HTMLElement) {
-    const bgEl = root.querySelector<HTMLElement>('.story-bg');
-    if (!bgEl) {
-      return;
-    }
-
-    const start = Date.now();
-    while (Date.now() - start < 500) {
-      const bg = getComputedStyle(bgEl).backgroundImage;
-      if (bg && bg !== 'none') {
-        return;
-      }
-      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
-    }
-  }
-
-  private async preloadBackgroundImage(el: HTMLElement) {
-    const bg = getComputedStyle(el).backgroundImage;
-    const match = /url\\([\"']?(.*?)[\"']?\\)/.exec(bg);
-    if (!match || !match[1] || match[1] === 'none') {
-      return;
-    }
-
-    await new Promise<void>((resolve) => {
-      const img = new Image();
-      img.onload = () => resolve();
-      img.onerror = () => resolve();
-      img.src = match[1];
-    });
+  private applyFilters(filters: CalFilters) {
+    this.gamesService.setDateRange(filters.startDate, filters.endDate);
+    this.filteredGames$ = this.games$.pipe(
+      map(games => {
+        let filteredGames = games;
+        filteredGames = filteredGames.filter(game => filters.selectedTeams?.includes(game.team));
+        filteredGames = filteredGames.filter(game => filters.onlyHomeGames ? game.isHomeGame : true);
+        return filteredGames;
+      })
+    );
+    this.storyGroups$ = this.filteredGames$.pipe(
+      map(games => this.groupGamesByDate(games))
+    );
   }
 
   private groupGamesByDate(games: StoryGame[]): StoryDayGroup[] {
@@ -267,14 +127,3 @@ export class CalComponent implements OnInit {
   }
 
 }
-
-type BackgroundSettings = {
-  zoom: number;
-  positionX: number;
-  positionY: number;
-  blur: number;
-  brightness: number;
-  contrast: number;
-  saturate: number;
-  overlay: number;
-};

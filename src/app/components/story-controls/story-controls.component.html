@@ -1,0 +1,92 @@
+<div class="story-controls">
+  <label class="story-control">
+    <span>Achtergrondfoto</span>
+    <input type="file" accept="image/*" (change)="onBackgroundSelected($event)">
+  </label>
+  <label class="story-control story-toggle">
+    <span>Achtergrond aan</span>
+    <input type="checkbox" [checked]="settings.backgroundEnabled"
+           (change)="updateSettings({ backgroundEnabled: $any($event.target).checked })">
+  </label>
+  <label class="story-control story-toggle">
+    <span>Pills vullen</span>
+    <input type="checkbox" [checked]="settings.fillPills"
+           (change)="updateSettings({ fillPills: $any($event.target).checked })">
+  </label>
+  <label class="story-control story-toggle">
+    <span>Logo tonen</span>
+    <input type="checkbox" [checked]="settings.showLogo"
+           (change)="updateSettings({ showLogo: $any($event.target).checked })">
+  </label>
+  <label class="story-control">
+    <span>Titel</span>
+    <input type="text" [value]="settings.titleText"
+           (input)="updateSettings({ titleText: $any($event.target).value })">
+  </label>
+  <label class="story-control">
+    <span>Logo positie</span>
+    <select [value]="settings.logoPosition" (change)="updateSettings({ logoPosition: $any($event.target).value })">
+      <option value="left">Links</option>
+      <option value="center">Midden</option>
+      <option value="right">Rechts</option>
+    </select>
+  </label>
+  <label class="story-control">
+    <span>Logo marge boven</span>
+    <input type="range" min="-24" max="48" [value]="settings.logoMarginTop"
+           (input)="updateSettings({ logoMarginTop: $any($event.target).valueAsNumber })">
+  </label>
+  <label class="story-control">
+    <span>Logo marge onder</span>
+    <input type="range" min="-24" max="48" [value]="settings.logoMarginBottom"
+           (input)="updateSettings({ logoMarginBottom: $any($event.target).valueAsNumber })">
+  </label>
+  <div class="story-presets">
+    <span>Presets</span>
+    <div class="story-preset-buttons">
+      <button mat-stroked-button type="button" *ngFor="let preset of presets"
+              (click)="applyPreset(preset)">{{ preset.label }}</button>
+    </div>
+  </div>
+  <label class="story-control">
+    <span>Zoom</span>
+    <input type="range" min="90" max="300" [value]="settings.backgroundSettings.zoom"
+           (input)="updateBackgroundSetting('zoom', $any($event.target).valueAsNumber)">
+  </label>
+  <label class="story-control">
+    <span>Positie X</span>
+    <input type="range" min="0" max="100" [value]="settings.backgroundSettings.positionX"
+           (input)="updateBackgroundSetting('positionX', $any($event.target).valueAsNumber)">
+  </label>
+  <label class="story-control">
+    <span>Positie Y</span>
+    <input type="range" min="0" max="100" [value]="settings.backgroundSettings.positionY"
+           (input)="updateBackgroundSetting('positionY', $any($event.target).valueAsNumber)">
+  </label>
+  <label class="story-control">
+    <span>Blur</span>
+    <input type="range" min="0" max="12" [value]="settings.backgroundSettings.blur"
+           (input)="updateBackgroundSetting('blur', $any($event.target).valueAsNumber)">
+  </label>
+  <label class="story-control">
+    <span>Brightness</span>
+    <input type="range" min="70" max="120" [value]="settings.backgroundSettings.brightness"
+           (input)="updateBackgroundSetting('brightness', $any($event.target).valueAsNumber)">
+  </label>
+  <label class="story-control">
+    <span>Contrast</span>
+    <input type="range" min="70" max="120" [value]="settings.backgroundSettings.contrast"
+           (input)="updateBackgroundSetting('contrast', $any($event.target).valueAsNumber)">
+  </label>
+  <label class="story-control">
+    <span>Saturation</span>
+    <input type="range" min="50" max="140" [value]="settings.backgroundSettings.saturate"
+           (input)="updateBackgroundSetting('saturate', $any($event.target).valueAsNumber)">
+  </label>
+  <label class="story-control">
+    <span>Overlay</span>
+    <input type="range" min="0" max="70" [value]="settings.backgroundSettings.overlay"
+           (input)="updateBackgroundSetting('overlay', $any($event.target).valueAsNumber)">
+  </label>
+  <app-story-export-button [target]="exportTarget" />
+</div>

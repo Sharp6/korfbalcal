@@ -1,75 +1,13 @@
 <div class="cal-layout">
-    <div class="cal-controls">
-    <mat-form-field>
-        <mat-label>Teams</mat-label>
-        <mat-select [formControl]="selectedTeams" multiple>
-            <mat-option (click)="selectAllTeams()">Select all</mat-option>
-            <mat-option (click)="deselectAllTeams()">Deselect all</mat-option>
-            <mat-divider></mat-divider>
-
-            @for (team of teams; track team) {
-            <mat-option [value]="team">{{team}}</mat-option>
-            }
-        </mat-select>
-    </mat-form-field>
-
-    <mat-form-field>
-        <mat-label>Datum bereik</mat-label>
-        <mat-date-range-input [rangePicker]="picker">
-            <input matStartDate [formControl]="startDate" placeholder="Startdatum">
-            <input matEndDate [formControl]="endDate" placeholder="Einddatum">
-        </mat-date-range-input>
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-date-range-picker #picker></mat-date-range-picker>
-    </mat-form-field>
-
-    <div class="date-quick-actions">
-        <button mat-stroked-button type="button" (click)="setNextDaysRange(7)">Volgende 7 dagen</button>
-        <button mat-stroked-button type="button" (click)="setNextDaysRange(30)">Volgende 30 dagen</button>
-        <button mat-stroked-button type="button" (click)="setNextDaysRange(60)">Volgende 60 dagen</button>
-        <button mat-stroked-button type="button" (click)="setNextDaysRange(90)">Volgende 90 dagen</button>
-    </div>
-
-
-    <mat-checkbox [formControl]="onlyHomeGames">Thuiswedstrijden</mat-checkbox>
-
-
-    </div>
+    <app-cal-filters
+        [teams]="teams"
+        [filters]="filters"
+        (filtersChange)="onFiltersChange($event)"
+    />
 
     <div *ngIf="filteredGames$ | async as games" class="cal-content">
         <div class="cal-table">
-        <table mat-table [dataSource]="games" class="mat-elevation-z8">
-
-            <ng-container matColumnDef="title">
-                <th mat-header-cell *matHeaderCellDef> Title </th>
-                <td mat-cell *matCellDef="let game"> {{game.title}} </td>
-            </ng-container>
-
-            <ng-container matColumnDef="team">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> team </th>
-                <td mat-cell *matCellDef="let game"> {{game.team}} </td>
-            </ng-container>
-
-            <ng-container matColumnDef="isHomeGame">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> thuiswedstrijd? </th>
-                <td mat-cell *matCellDef="let game"> 
-                    <mat-icon [innerText]="game.isHomeGame ? 'home' : 'airport_shuttle'"></mat-icon>
-                </td>
-            </ng-container>
-
-            <ng-container matColumnDef="date">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Datum </th>
-                <td mat-cell *matCellDef="let game"> {{game.start | date:'dd/MM'}} </td>
-            </ng-container>
-
-            <ng-container matColumnDef="time">
-                <th mat-header-cell *matHeaderCellDef> tijd </th>
-                <td mat-cell *matCellDef="let game"> {{game.start | date:'HH:mm'}} - {{game.end | date:'HH:mm'}} </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
+        <app-cal-table [games]="games" [displayedColumns]="displayedColumns" />
         </div>
 
         <div class="story-panel">
@@ -77,127 +15,39 @@
                 <ng-container *ngIf="storyGroups$ | async as storyGroups; else emptyGroups">
                     <app-story-preview
                         [groups]="storyGroups"
-                    [backgroundUrl]="backgroundEnabled ? backgroundUrl : null"
-                    [fillPills]="fillPills"
-                    [showLogo]="showLogo"
-                    [logoUrl]="logoUrl"
-                    [logoMarginTop]="logoMarginTop"
-                    [logoMarginBottom]="logoMarginBottom"
-                    [title]="titleText"
-                    [logoPosition]="logoPosition"
-                    [backgroundSettings]="backgroundSettings"
-                />
-            </ng-container>
-            <ng-template #emptyGroups>
-                <app-story-preview
-                    [groups]="[]"
-                    [backgroundUrl]="backgroundEnabled ? backgroundUrl : null"
-                    [fillPills]="fillPills"
-                    [showLogo]="showLogo"
-                    [logoUrl]="logoUrl"
-                    [logoMarginTop]="logoMarginTop"
-                    [logoMarginBottom]="logoMarginBottom"
-                    [title]="titleText"
-                    [logoPosition]="logoPosition"
-                    [backgroundSettings]="backgroundSettings"
-                />
-            </ng-template>
+                        [backgroundUrl]="storySettings.backgroundEnabled ? storySettings.backgroundUrl : null"
+                        [fillPills]="storySettings.fillPills"
+                        [showLogo]="storySettings.showLogo"
+                        [logoUrl]="storySettings.logoUrl"
+                        [logoMarginTop]="storySettings.logoMarginTop"
+                        [logoMarginBottom]="storySettings.logoMarginBottom"
+                        [title]="storySettings.titleText"
+                        [logoPosition]="storySettings.logoPosition"
+                        [backgroundSettings]="storySettings.backgroundSettings"
+                    />
+                </ng-container>
+                <ng-template #emptyGroups>
+                    <app-story-preview
+                        [groups]="[]"
+                        [backgroundUrl]="storySettings.backgroundEnabled ? storySettings.backgroundUrl : null"
+                        [fillPills]="storySettings.fillPills"
+                        [showLogo]="storySettings.showLogo"
+                        [logoUrl]="storySettings.logoUrl"
+                        [logoMarginTop]="storySettings.logoMarginTop"
+                        [logoMarginBottom]="storySettings.logoMarginBottom"
+                        [title]="storySettings.titleText"
+                        [logoPosition]="storySettings.logoPosition"
+                        [backgroundSettings]="storySettings.backgroundSettings"
+                    />
+                </ng-template>
             </div>
 
-            <div class="story-controls">
-                <label class="story-control">
-                    <span>Achtergrondfoto</span>
-                    <input type="file" accept="image/*" (change)="onBackgroundSelected($event)">
-                </label>
-                <label class="story-control story-toggle">
-                    <span>Achtergrond aan</span>
-                    <input type="checkbox" [checked]="backgroundEnabled"
-                           (change)="backgroundEnabled = $any($event.target).checked">
-                </label>
-                <label class="story-control story-toggle">
-                    <span>Pills vullen</span>
-                    <input type="checkbox" [checked]="fillPills"
-                           (change)="fillPills = $any($event.target).checked">
-                </label>
-                <label class="story-control story-toggle">
-                    <span>Logo tonen</span>
-                    <input type="checkbox" [checked]="showLogo"
-                           (change)="showLogo = $any($event.target).checked">
-                </label>
-                <label class="story-control">
-                    <span>Titel</span>
-                    <input type="text" [value]="titleText"
-                           (input)="titleText = $any($event.target).value">
-                </label>
-                <label class="story-control">
-                    <span>Logo positie</span>
-                    <select [value]="logoPosition" (change)="logoPosition = $any($event.target).value">
-                        <option value="left">Links</option>
-                        <option value="center">Midden</option>
-                        <option value="right">Rechts</option>
-                    </select>
-                </label>
-                <label class="story-control">
-                    <span>Logo marge boven</span>
-                    <input type="range" min="-24" max="48" [value]="logoMarginTop"
-                           (input)="logoMarginTop = $any($event.target).valueAsNumber">
-                </label>
-                <label class="story-control">
-                    <span>Logo marge onder</span>
-                    <input type="range" min="-24" max="48" [value]="logoMarginBottom"
-                           (input)="logoMarginBottom = $any($event.target).valueAsNumber">
-                </label>
-                <div class="story-presets">
-                    <span>Presets</span>
-                    <div class="story-preset-buttons">
-                        <button mat-stroked-button type="button" *ngFor="let preset of presets"
-                                (click)="applyPreset(preset)">{{ preset.label }}</button>
-                    </div>
-                </div>
-                <label class="story-control">
-                    <span>Zoom</span>
-                    <input type="range" min="90" max="300" [value]="backgroundSettings.zoom"
-                           (input)="backgroundSettings.zoom = $any($event.target).valueAsNumber">
-                </label>
-                <label class="story-control">
-                    <span>Positie X</span>
-                    <input type="range" min="0" max="100" [value]="backgroundSettings.positionX"
-                           (input)="backgroundSettings.positionX = $any($event.target).valueAsNumber">
-                </label>
-                <label class="story-control">
-                    <span>Positie Y</span>
-                    <input type="range" min="0" max="100" [value]="backgroundSettings.positionY"
-                           (input)="backgroundSettings.positionY = $any($event.target).valueAsNumber">
-                </label>
-                <label class="story-control">
-                    <span>Blur</span>
-                    <input type="range" min="0" max="12" [value]="backgroundSettings.blur"
-                           (input)="backgroundSettings.blur = $any($event.target).valueAsNumber">
-                </label>
-                <label class="story-control">
-                    <span>Brightness</span>
-                    <input type="range" min="70" max="120" [value]="backgroundSettings.brightness"
-                           (input)="backgroundSettings.brightness = $any($event.target).valueAsNumber">
-                </label>
-                <label class="story-control">
-                    <span>Contrast</span>
-                    <input type="range" min="70" max="120" [value]="backgroundSettings.contrast"
-                           (input)="backgroundSettings.contrast = $any($event.target).valueAsNumber">
-                </label>
-                <label class="story-control">
-                    <span>Saturation</span>
-                    <input type="range" min="50" max="140" [value]="backgroundSettings.saturate"
-                           (input)="backgroundSettings.saturate = $any($event.target).valueAsNumber">
-                </label>
-                <label class="story-control">
-                    <span>Overlay</span>
-                    <input type="range" min="0" max="70" [value]="backgroundSettings.overlay"
-                           (input)="backgroundSettings.overlay = $any($event.target).valueAsNumber">
-                </label>
-                <button mat-stroked-button type="button" (click)="downloadStoryImage()" [disabled]="exporting">
-                    {{ exporting ? 'Bezig met exporteren...' : 'Download afbeelding' }}
-                </button>
-            </div>
+            <app-story-controls
+                [settings]="storySettings"
+                [presets]="presets"
+                [exportTarget]="storyCapture"
+                (settingsChange)="onStorySettingsChange($event)"
+            />
         </div>
     </div>
 

@@ -1,0 +1,4 @@
+<button mat-stroked-button type="button" (click)="exportImage()" [disabled]="disabled || exporting">
+  {{ exporting ? 'Bezig met exporteren...' : 'Download afbeelding' }}
+</button>
+<div class="export-error" *ngIf="errorMessage">{{ errorMessage }}</div>
