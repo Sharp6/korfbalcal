@@ -14,7 +14,6 @@ import { BackgroundSettings, StorySettings } from '../../models/story-settings.m
 export class StoryControlsComponent {
   @Input({ required: true }) settings!: StorySettings;
   @Input() presets: { label: string; values: BackgroundSettings }[] = [];
-  @Input() exportTarget: HTMLElement | null = null;
   @Output() settingsChange = new EventEmitter<StorySettings>();
 
   onBackgroundSelected(event: Event) {

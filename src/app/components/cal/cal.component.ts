@@ -6,6 +6,7 @@ import { StoryPreviewComponent, StoryDayGroup, StoryGame } from '../story-previe
 import { CalFiltersComponent } from '../cal-filters/cal-filters.component';
 import { CalTableComponent } from '../cal-table/cal-table.component';
 import { StoryControlsComponent } from '../story-controls/story-controls.component';
+import { StoryExportButtonComponent } from '../story-export-button/story-export-button.component';
 import { CalFilters } from '../../models/cal-filters.model';
 import { BackgroundSettings, StorySettings } from '../../models/story-settings.model';
 
@@ -17,12 +18,19 @@ import { BackgroundSettings, StorySettings } from '../../models/story-settings.m
     CalFiltersComponent,
     CalTableComponent,
     StoryPreviewComponent,
-    StoryControlsComponent
+    StoryControlsComponent,
+    StoryExportButtonComponent
   ],
   templateUrl: './cal.component.html',
   styleUrl: './cal.component.css'
 })
 export class CalComponent implements OnInit {
+  currentStep = 1;
+  steps = [
+    { id: 1, label: 'Select events' },
+    { id: 2, label: 'Background' },
+    { id: 3, label: 'Download' }
+  ];
   displayedColumns: string[] = ['title', 'team', 'isHomeGame', 'date', 'time'];
 
   teams: string[] = this.gamesService.teams;
@@ -90,6 +98,20 @@ export class CalComponent implements OnInit {
 
   onStorySettingsChange(settings: StorySettings) {
     this.storySettings = settings;
+  }
+
+  goToStep(stepId: number) {
+    this.currentStep = stepId;
+  }
+
+  nextStep() {
+    const next = Math.min(this.currentStep + 1, this.steps.length);
+    this.currentStep = next;
+  }
+
+  previousStep() {
+    const prev = Math.max(this.currentStep - 1, 1);
+    this.currentStep = prev;
   }
 
   private applyFilters(filters: CalFilters) {

@@ -1,53 +1,86 @@
 <div class="cal-layout">
-    <app-cal-filters
-        [teams]="teams"
-        [filters]="filters"
-        (filtersChange)="onFiltersChange($event)"
-    />
-
-    <div *ngIf="filteredGames$ | async as games" class="cal-content">
-        <div class="cal-table">
-        <app-cal-table [games]="games" [displayedColumns]="displayedColumns" />
+    <div class="wizard">
+        <div class="wizard-header">
+            <div class="wizard-steps">
+                <button
+                    *ngFor="let step of steps"
+                    class="wizard-step"
+                    [class.is-active]="currentStep === step.id"
+                    (click)="goToStep(step.id)"
+                    type="button"
+                >
+                    <span class="wizard-step-index">{{ step.id }}</span>
+                    <span class="wizard-step-label">{{ step.label }}</span>
+                </button>
+            </div>
+            <div class="wizard-actions">
+                <button type="button" class="wizard-btn" (click)="previousStep()" [disabled]="currentStep === 1">
+                    Back
+                </button>
+                <button type="button" class="wizard-btn primary" (click)="nextStep()" [disabled]="currentStep === steps.length">
+                    Next
+                </button>
+            </div>
         </div>
 
-        <div class="story-panel">
-            <div class="story-panel-preview" #storyCapture>
-                <ng-container *ngIf="storyGroups$ | async as storyGroups; else emptyGroups">
-                    <app-story-preview
-                        [groups]="storyGroups"
-                        [backgroundUrl]="storySettings.backgroundEnabled ? storySettings.backgroundUrl : null"
-                        [fillPills]="storySettings.fillPills"
-                        [showLogo]="storySettings.showLogo"
-                        [logoUrl]="storySettings.logoUrl"
-                        [logoMarginTop]="storySettings.logoMarginTop"
-                        [logoMarginBottom]="storySettings.logoMarginBottom"
-                        [title]="storySettings.titleText"
-                        [logoPosition]="storySettings.logoPosition"
-                        [backgroundSettings]="storySettings.backgroundSettings"
+        <div *ngIf="filteredGames$ | async as games" class="wizard-content">
+            <div class="wizard-left">
+                <div *ngIf="currentStep === 1" class="wizard-step-panel">
+                    <app-cal-filters
+                        [teams]="teams"
+                        [filters]="filters"
+                        (filtersChange)="onFiltersChange($event)"
                     />
-                </ng-container>
-                <ng-template #emptyGroups>
-                    <app-story-preview
-                        [groups]="[]"
-                        [backgroundUrl]="storySettings.backgroundEnabled ? storySettings.backgroundUrl : null"
-                        [fillPills]="storySettings.fillPills"
-                        [showLogo]="storySettings.showLogo"
-                        [logoUrl]="storySettings.logoUrl"
-                        [logoMarginTop]="storySettings.logoMarginTop"
-                        [logoMarginBottom]="storySettings.logoMarginBottom"
-                        [title]="storySettings.titleText"
-                        [logoPosition]="storySettings.logoPosition"
-                        [backgroundSettings]="storySettings.backgroundSettings"
+                    <div class="cal-table">
+                        <app-cal-table [games]="games" [displayedColumns]="displayedColumns" />
+                    </div>
+                </div>
+
+                <div *ngIf="currentStep === 2" class="wizard-step-panel">
+                    <app-story-controls
+                        [settings]="storySettings"
+                        [presets]="presets"
+                        (settingsChange)="onStorySettingsChange($event)"
                     />
-                </ng-template>
+                </div>
+
+                <div *ngIf="currentStep === 3" class="wizard-step-panel">
+                    <app-story-export-button [target]="storyCapture" />
+                </div>
             </div>
 
-            <app-story-controls
-                [settings]="storySettings"
-                [presets]="presets"
-                [exportTarget]="storyCapture"
-                (settingsChange)="onStorySettingsChange($event)"
-            />
+            <div class="wizard-right">
+                <div class="story-panel-preview" #storyCapture>
+                    <ng-container *ngIf="storyGroups$ | async as storyGroups; else emptyGroups">
+                        <app-story-preview
+                            [groups]="storyGroups"
+                            [backgroundUrl]="storySettings.backgroundEnabled ? storySettings.backgroundUrl : null"
+                            [fillPills]="storySettings.fillPills"
+                            [showLogo]="storySettings.showLogo"
+                            [logoUrl]="storySettings.logoUrl"
+                            [logoMarginTop]="storySettings.logoMarginTop"
+                            [logoMarginBottom]="storySettings.logoMarginBottom"
+                            [title]="storySettings.titleText"
+                            [logoPosition]="storySettings.logoPosition"
+                            [backgroundSettings]="storySettings.backgroundSettings"
+                        />
+                    </ng-container>
+                    <ng-template #emptyGroups>
+                        <app-story-preview
+                            [groups]="[]"
+                            [backgroundUrl]="storySettings.backgroundEnabled ? storySettings.backgroundUrl : null"
+                            [fillPills]="storySettings.fillPills"
+                            [showLogo]="storySettings.showLogo"
+                            [logoUrl]="storySettings.logoUrl"
+                            [logoMarginTop]="storySettings.logoMarginTop"
+                            [logoMarginBottom]="storySettings.logoMarginBottom"
+                            [title]="storySettings.titleText"
+                            [logoPosition]="storySettings.logoPosition"
+                            [backgroundSettings]="storySettings.backgroundSettings"
+                        />
+                    </ng-template>
+                </div>
+            </div>
         </div>
     </div>
 

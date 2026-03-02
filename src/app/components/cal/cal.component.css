@@ -4,22 +4,111 @@
   gap: 16px;
 }
 
-.cal-content {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  align-items: stretch;
-}
-
 .cal-table {
   min-width: 0;
 }
 
-.story-panel {
+.wizard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.wizard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.wizard-steps {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.wizard-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.wizard-step.is-active {
+  border-color: #1b2d5c;
+  box-shadow: 0 0 0 2px rgba(27, 45, 92, 0.15);
+}
+
+.wizard-step-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #1b2d5c;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wizard-step-label {
+  font-size: 14px;
+}
+
+.wizard-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.wizard-btn {
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 6px 12px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.wizard-btn.primary {
+  background: #1b2d5c;
+  color: #fff;
+  border-color: #1b2d5c;
+}
+
+.wizard-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wizard-content {
   display: grid;
-  grid-template-columns: minmax(280px, 420px) minmax(320px, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
   gap: 24px;
   align-items: start;
+}
+
+.wizard-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.wizard-step-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.wizard-right {
+  display: flex;
+  justify-content: center;
 }
 
 .story-panel-preview {
@@ -28,11 +117,12 @@
 }
 
 @media (max-width: 960px) {
-  .story-panel {
+  .wizard-content {
     grid-template-columns: 1fr;
   }
 
-  .story-panel-preview {
+  .wizard-right {
+    order: 2;
     justify-content: flex-start;
   }
 }
