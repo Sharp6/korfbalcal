@@ -31,7 +31,8 @@ export class CalComponent implements OnInit {
     { id: 2, label: 'Background' },
     { id: 3, label: 'Download' }
   ];
-  displayedColumns: string[] = ['title', 'team', 'isHomeGame', 'date', 'time'];
+  displayedColumns: string[] = ['selected', 'title', 'team', 'isHomeGame', 'date', 'time'];
+  deselectedGameIds = new Set<string>();
 
   teams: string[] = this.gamesService.teams;
   filters: CalFilters = {
@@ -96,6 +97,16 @@ export class CalComponent implements OnInit {
     this.applyFilters(filters);
   }
 
+  onGameSelectionChange(event: { game: any; selected: boolean }) {
+    const id = this.getGameId(event.game);
+    if (event.selected) {
+      this.deselectedGameIds.delete(id);
+    } else {
+      this.deselectedGameIds.add(id);
+    }
+    this.applyFilters(this.filters, false);
+  }
+
   onStorySettingsChange(settings: StorySettings) {
     this.storySettings = settings;
   }
@@ -114,8 +125,10 @@ export class CalComponent implements OnInit {
     this.currentStep = prev;
   }
 
-  private applyFilters(filters: CalFilters) {
-    this.gamesService.setDateRange(filters.startDate, filters.endDate);
+  private applyFilters(filters: CalFilters, updateDateRange = true) {
+    if (updateDateRange) {
+      this.gamesService.setDateRange(filters.startDate, filters.endDate);
+    }
     this.filteredGames$ = this.games$.pipe(
       map(games => {
         let filteredGames = games;
@@ -124,9 +137,16 @@ export class CalComponent implements OnInit {
         return filteredGames;
       })
     );
-    this.storyGroups$ = this.filteredGames$.pipe(
-      map(games => this.groupGamesByDate(games))
+    const storyFiltered$ = this.filteredGames$.pipe(
+      map(games => games.filter(game => !this.deselectedGameIds.has(this.getGameId(game))))
     );
+    this.storyGroups$ = storyFiltered$.pipe(map(games => this.groupGamesByDate(games)));
+  }
+
+  getGameId(game: any) {
+    const start = new Date(game.start).toISOString();
+    const end = new Date(game.end).toISOString();
+    return `${start}|${end}|${game.title}`;
   }
 
   private groupGamesByDate(games: StoryGame[]): StoryDayGroup[] {

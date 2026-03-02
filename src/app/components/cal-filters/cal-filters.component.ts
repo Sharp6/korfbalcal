@@ -1,10 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDividerModule } from '@angular/material/divider';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
@@ -18,10 +16,8 @@ import { CalFilters } from '../../models/cal-filters.model';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatSelectModule,
     MatFormFieldModule,
     MatCheckboxModule,
-    MatDividerModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,
@@ -76,6 +72,20 @@ export class CalFiltersComponent implements OnChanges {
 
   deselectAllTeams() {
     this.selectedTeams.setValue([]);
+  }
+
+  isTeamSelected(team: string) {
+    return this.selectedTeams.value?.includes(team) ?? false;
+  }
+
+  toggleTeam(team: string, checked: boolean) {
+    const next = new Set(this.selectedTeams.value ?? []);
+    if (checked) {
+      next.add(team);
+    } else {
+      next.delete(team);
+    }
+    this.selectedTeams.setValue(Array.from(next));
   }
 
   setNextDaysRange(days: number) {

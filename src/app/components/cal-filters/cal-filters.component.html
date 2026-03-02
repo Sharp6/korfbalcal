@@ -1,33 +1,40 @@
 <div class="cal-controls">
-  <mat-form-field>
-    <mat-label>Teams</mat-label>
-    <mat-select [formControl]="selectedTeams" multiple>
-      <mat-option (click)="selectAllTeams()">Select all</mat-option>
-      <mat-option (click)="deselectAllTeams()">Deselect all</mat-option>
-      <mat-divider></mat-divider>
-
+  <div class="teams-panel">
+    <div class="teams-header">
+      <span class="teams-title">Teams</span>
+      <div class="teams-actions">
+        <button mat-stroked-button type="button" (click)="selectAllTeams()">Select all</button>
+        <button mat-stroked-button type="button" (click)="deselectAllTeams()">Deselect all</button>
+      </div>
+    </div>
+    <div class="teams-list">
       @for (team of teams; track team) {
-      <mat-option [value]="team">{{team}}</mat-option>
+      <mat-checkbox [checked]="isTeamSelected(team)" (change)="toggleTeam(team, $event.checked)">
+        {{team}}
+      </mat-checkbox>
       }
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field>
-    <mat-label>Datum bereik</mat-label>
-    <mat-date-range-input [rangePicker]="picker">
-      <input matStartDate [formControl]="startDate" placeholder="Startdatum">
-      <input matEndDate [formControl]="endDate" placeholder="Einddatum">
-    </mat-date-range-input>
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-date-range-picker #picker></mat-date-range-picker>
-  </mat-form-field>
-
-  <div class="date-quick-actions">
-    <button mat-stroked-button type="button" (click)="setNextDaysRange(7)">Volgende 7 dagen</button>
-    <button mat-stroked-button type="button" (click)="setNextDaysRange(30)">Volgende 30 dagen</button>
-    <button mat-stroked-button type="button" (click)="setNextDaysRange(60)">Volgende 60 dagen</button>
-    <button mat-stroked-button type="button" (click)="setNextDaysRange(90)">Volgende 90 dagen</button>
+    </div>
   </div>
+
+  <div class="dates-panel">
+    <mat-form-field>
+      <mat-label>Datum bereik</mat-label>
+      <mat-date-range-input [rangePicker]="picker">
+        <input matStartDate [formControl]="startDate" placeholder="Startdatum">
+        <input matEndDate [formControl]="endDate" placeholder="Einddatum">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+
+    <div class="date-quick-actions">
+      <button mat-stroked-button type="button" (click)="setNextDaysRange(7)">Volgende 7 dagen</button>
+      <button mat-stroked-button type="button" (click)="setNextDaysRange(30)">Volgende 30 dagen</button>
+      <button mat-stroked-button type="button" (click)="setNextDaysRange(60)">Volgende 60 dagen</button>
+      <button mat-stroked-button type="button" (click)="setNextDaysRange(90)">Volgende 90 dagen</button>
+    </div>
+  </div>
+  
 
   <mat-checkbox [formControl]="onlyHomeGames">Thuiswedstrijden</mat-checkbox>
 </div>

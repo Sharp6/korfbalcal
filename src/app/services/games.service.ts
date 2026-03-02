@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, distinctUntilChanged, map, Observable, shareReplay, switchMap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class GamesService {
   defaultStartDate = new Date();
   defaultEndDate = new Date(new Date().getFullYear(), 11, 31, 23, 59);
 
-  private apiUrl = '/api/ajax/calendar/events';
+  private apiUrl = `${environment.apiBaseUrl}/ajax/calendar/events`;
   private dateRange$ = new BehaviorSubject<{ start: Date; end: Date }>({
     start: this.defaultStartDate,
     end: this.defaultEndDate

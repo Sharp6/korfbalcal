@@ -32,7 +32,13 @@
                         (filtersChange)="onFiltersChange($event)"
                     />
                     <div class="cal-table">
-                        <app-cal-table [games]="games" [displayedColumns]="displayedColumns" />
+                        <app-cal-table
+                            [games]="games"
+                            [displayedColumns]="displayedColumns"
+                            [deselectedIds]="deselectedGameIds"
+                            [gameIdFn]="getGameId.bind(this)"
+                            (selectionChange)="onGameSelectionChange($event)"
+                        />
                     </div>
                 </div>
 

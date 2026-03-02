@@ -1,13 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { StoryExportButtonComponent } from '../story-export-button/story-export-button.component';
 import { BackgroundSettings, StorySettings } from '../../models/story-settings.model';
 
 @Component({
   selector: 'app-story-controls',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, StoryExportButtonComponent],
+  imports: [CommonModule, MatButtonModule],
   templateUrl: './story-controls.component.html',
   styleUrl: './story-controls.component.css'
 })
